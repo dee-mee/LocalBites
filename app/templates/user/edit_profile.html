@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Edit Profile</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <img id="avatar-preview" src="https://via.placeholder.com/150" class="rounded-circle img-thumbnail" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="avatar" class="btn btn-sm btn-outline-primary w-100">
+                                    <i class="bi bi-camera me-1"></i> Change Photo
+                                </label>
+                                <input type="file" id="avatar" name="avatar" class="d-none" accept="image/*">
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100" id="remove-avatar">
+                                    <i class="bi bi-trash me-1"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                {{ form.username.label(class="form-label") }}
+                                {{ form.username(class="form-control" + (' is-invalid' if form.username.errors else '')) }}
+                                {% for error in form.username.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.about_me.label(class="form-label") }}
+                                {{ form.about_me(class="form-control" + (' is-invalid' if form.about_me.errors else ''), rows=4) }}
+                                <div class="form-text">Tell us a bit about yourself</div>
+                                {% for error in form.about_me.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-4">Preferences</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.location.label(class="form-label") }}
+                            {{ form.location(class="form-control" + (' is-invalid' if form.location.errors else '')) }}
+                            <div class="form-text">Your current location</div>
+                            {% for error in form.location.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.preferred_cuisine.label(class="form-label") }}
+                            {{ form.preferred_cuisine(class="form-select" + (' is-invalid' if form.preferred_cuisine.errors else '')) }}
+                            <div class="form-text">Your favorite type of cuisine</div>
+                            {% for error in form.preferred_cuisine.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.cooking_level.label(class="form-label") }}
+                            {{ form.cooking_level(class="form-select" + (' is-invalid' if form.cooking_level.errors else '')) }}
+                            <div class="form-text">Your cooking experience level</div>
+                            {% for error in form.cooking_level.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.dietary_restrictions.label(class="form-label") }}
+                            {{ form.dietary_restrictions(class="form-control" + (' is-invalid' if form.dietary_restrictions.errors else '')) }}
+                            <div class="form-text">e.g., vegetarian, gluten-free, allergies (comma-separated)</div>
+                            {% for error in form.dietary_restrictions.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-4">Change Password</h5>
+                    
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-5">
+                        <a href="{{ url_for('auth.user', username=current_user.username) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// Preview uploaded avatar image
+document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatar-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Remove avatar
+document.getElementById('remove-avatar').addEventListener('click', function() {
+    document.getElementById('avatar').value = '';
+    document.getElementById('avatar-preview').src = '{{ url_for('static', filename='images/default-avatar.png') }}';
+});
+
+// Form validation
+const form = document.querySelector('form');
+form.addEventListener('submit', function(e) {
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const currentPassword = document.getElementById('current_password').value;
+    
+    // Only validate password fields if any password field is filled
+    if (newPassword || confirmPassword || currentPassword) {
+        if (!currentPassword) {
+            e.preventDefault();
+            alert('Please enter your current password to make changes.');
+            return false;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('New passwords do not match!');
+            return false;
+        }
+        
+        if (newPassword.length > 0 && newPassword.length < 8) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters long.');
+            return false;
+        }
+    }
+    
+    return true;
+});
+</script>
+{% endblock %}

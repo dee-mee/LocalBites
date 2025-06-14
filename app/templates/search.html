@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Search Results for "{{ query }}"</h2>
+        <p class="text-muted">{{ results.total }} recipes found</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Refine Search</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('main.search') }}">
+                    <input type="hidden" name="q" value="{{ query }}">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Cuisine</label>
+                        {% for cuisine in cuisines %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="cuisine" value="{{ cuisine.id }}" id="cuisine{{ cuisine.id }}"
+                                {% if cuisine.id|string in request.args.getlist('cuisine') %}checked{% endif %}>
+                            <label class="form-check-label" for="cuisine{{ cuisine.id }}">
+                                {{ cuisine.name }} ({{ cuisine.count }})
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Meal Type</label>
+                        {% for type in meal_types %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="meal_type" value="{{ type.id }}" id="type{{ type.id }}"
+                                {% if type.id|string in request.args.getlist('meal_type') %}checked{% endif %}>
+                            <label class="form-check-label" for="type{{ type.id }}">
+                                {{ type.name }} ({{ type.count }})
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Dietary Needs</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="vegetarian" id="vegetarian" {% if 'vegetarian' in request.args %}checked{% endif %}>
+                            <label class="form-check-label" for="vegetarian">Vegetarian</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="vegan" id="vegan" {% if 'vegan' in request.args %}checked{% endif %}>
+                            <label class="form-check-label" for="vegan">Vegan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="gluten_free" id="gluten_free" {% if 'gluten_free' in request.args %}checked{% endif %}>
+                            <label class="form-check-label" for="gluten_free">Gluten Free</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="dairy_free" id="dairy_free" {% if 'dairy_free' in request.args %}checked{% endif %}>
+                            <label class="form-check-label" for="dairy_free">Dairy Free</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cook_time" class="form-label">Max Cook Time</label>
+                        <select class="form-select" id="cook_time" name="cook_time">
+                            <option value="">Any Time</option>
+                            <option value="15" {% if request.args.get('cook_time') == '15' %}selected{% endif %}>15 minutes or less</option>
+                            <option value="30" {% if request.args.get('cook_time') == '30' %}selected{% endif %}>30 minutes or less</option>
+                            <option value="45" {% if request.args.get('cook_time') == '45' %}selected{% endif %}>45 minutes or less</option>
+                            <option value="60" {% if request.args.get('cook_time') == '60' %}selected{% endif %}>1 hour or less</option>
+                            <option value="120" {% if request.args.get('cook_time') == '120' %}selected{% endif %}>2 hours or less</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sort" class="form-label">Sort By</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="relevance" {% if request.args.get('sort') == 'relevance' %}selected{% endif %}>Relevance</option>
+                            <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="popular" {% if request.args.get('sort') == 'popular' %}selected{% endif %}>Most Popular</option>
+                            <option value="rating" {% if request.args.get('sort') == 'rating' %}selected{% endif %}>Highest Rated</option>
+                            <option value="time" {% if request.args.get('sort') == 'time' %}selected{% endif %}>Quickest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="{{ url_for('main.search', q=query) }}" class="btn btn-outline-secondary">Reset All</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Search Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><i class="bi bi-lightbulb me-2 text-warning"></i> Use quotes for exact matches: "chocolate cake"</li>
+                    <li class="mb-2"><i class="bi bi-lightbulb me-2 text-warning"></i> Exclude terms with -: cookies -raisins</li>
+                    <li class="mb-2"><i class="bi bi-lightbulb me-2 text-warning"></i> Search by ingredient: ingredient:chicken</li>
+                    <li><i class="bi bi-lightbulb me-2 text-warning"></i> Find quick meals: time:&lt;30</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        {% if results.items %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4">
+                {% for recipe in results.items %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            {% if recipe.image_url %}
+                            <img src="{{ url_for('static', filename=recipe.image_url) }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 180px; object-fit: cover;">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <i class="bi bi-image fs-1 text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <button class="btn btn-sm btn-light rounded-circle save-recipe" data-recipe-id="{{ recipe.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="Save recipe">
+                                    <i class="bi bi-bookmark"></i>
+                                </button>
+                            </div>
+                            {% if recipe.cook_time %}
+                            <div class="position-absolute bottom-0 start-0 m-2">
+                                <span class="badge bg-dark bg-opacity-75">
+                                    <i class="bi bi-clock me-1"></i> {{ recipe.cook_time }} min
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ url_for('recipes.recipe', id=recipe.id) }}" class="text-decoration-none text-dark">
+                                    {{ recipe.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small">{{ recipe.description|truncate(100) if recipe.description else 'No description available.' }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if recipe.cuisine %}
+                                    <span class="badge bg-primary me-1">{{ recipe.cuisine }}</span>
+                                    {% endif %}
+                                    {% if recipe.difficulty %}
+                                    <span class="badge bg-secondary">{{ recipe.difficulty|title }}</span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-person me-1"></i>
+                                    <a href="{{ url_for('auth.user', username=recipe.author.username) }}" class="text-muted text-decoration-none">
+                                        {{ recipe.author.username }}
+                                    </a>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 pt-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">4.8</span>
+                                    <span class="text-muted">(24)</span>
+                                </div>
+                                <div>
+                                    <i class="bi bi-chat-left-text me-1"></i>
+                                    <span>12</span>
+                                </div>
+                                <div>
+                                    <i class="bi bi-heart me-1"></i>
+                                    <span>45</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Search results pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not results.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.search', q=query, page=results.prev_num, **request.args) if results.has_prev else '#' }}" {% if not results.has_prev %}tabindex="-1" aria-disabled="true"{% endif %}>
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% for page_num in results.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            {% if results.page == page_num %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('main.search', q=query, page=page_num, **request.args) }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not results.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.search', q=query, page=results.next_num, **request.args) if results.has_next else '#' }}" {% if not results.has_next %}tabindex="-1" aria-disabled="true"{% endif %}>
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% else %}
+            <div class="text-center py-5 my-5">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3 class="mt-3">No recipes found</h3>
+                <p class="text-muted">Try adjusting your search or filter criteria</p>
+                <a href="{{ url_for('main.explore') }}" class="btn btn-primary mt-2">Browse All Recipes</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Can't find what you're looking for?</h5>
+                    <p class="card-text">Try these suggestions:</p>
+                    <ul>
+                        <li>Check your spelling or try different keywords</li>
+                        <li>Make your search more general</li>
+                        <li>Browse our <a href="{{ url_for('main.explore') }}">recipe collections</a></li>
+                        <li>Or <a href="{{ url_for('recipes.create') }}">add your own recipe</a> to our collection</li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+});
+
+// Handle save recipe buttons
+document.querySelectorAll('.save-recipe').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const recipeId = this.dataset.recipeId;
+        // Add your save recipe logic here
+        this.innerHTML = '<i class="bi bi-bookmark-check-fill"></i>';
+        this.classList.remove('btn-light');
+        this.classList.add('btn-warning');
+        
+        // Show toast notification
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3';
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+        toastEl.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle me-2"></i> Recipe saved to your favorites
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(toastEl);
+        
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+        
+        // Remove toast after it's hidden
+        toastEl.addEventListener('hidden.bs.toast', function () {
+            document.body.removeChild(toastEl);
+        });
+    });
+});
+
+// Handle filter form submission
+const filterForm = document.querySelector('form[method="GET"]');
+if (filterForm) {
+    // Update URL when form changes without page reload for better UX
+    filterForm.addEventListener('change', function() {
+        // This is a simplified version - in a real app, you'd use AJAX to update results
+        // For now, we'll just submit the form normally
+        this.submit();
+    });
+}
+</script>
+{% endblock %}

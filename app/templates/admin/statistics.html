@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+
+{% block admin_title %}Statistics{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- User Statistics -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">User Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase">Total Users</h6>
+                                    <h2 class="mb-0">{{ total_users }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase">Active (24h)</h6>
+                                    <h2 class="mb-0">{{ active_users }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase">New This Week</h6>
+                                    <h2 class="mb-0">{{ new_users_this_week }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Statistics -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Recipe Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase">Total Recipes</h6>
+                                    <h2 class="mb-0">{{ total_recipes }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase">New This Week</h6>
+                                    <h2 class="mb-0">{{ new_recipes_this_week }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Recipes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Most Popular Recipes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Recipe</th>
+                                    <th>Author</th>
+                                    <th>Times Cooked</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for recipe in popular_recipes %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <a href="{{ url_for('recipes.recipe', id=recipe.id) }}" target="_blank">
+                                            {{ recipe.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('auth.user', username=recipe.author.username) }}">
+                                            {{ recipe.author.username }}
+                                        </a>
+                                    </td>
+                                    <td>{{ recipe.cooked_by.count() }}</td>
+                                    <td>{{ recipe.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

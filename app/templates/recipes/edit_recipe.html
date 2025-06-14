@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Edit Recipe</h3>
+                <p class="text-muted mb-0">Update your recipe details below</p>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Basic Information</h5>
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control" + (' is-invalid' if form.title.errors else '')) }}
+                            {% for error in form.title.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control" + (' is-invalid' if form.description.errors else ''), rows="3") }}
+                            <div class="form-text">A brief description of your recipe</div>
+                            {% for error in form.description.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.cuisine.label(class="form-label") }}
+                                {{ form.cuisine(class="form-select" + (' is-invalid' if form.cuisine.errors else '')) }}
+                                {% for error in form.cuisine.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.difficulty.label(class="form-label") }}
+                                {{ form.difficulty(class="form-select" + (' is-invalid' if form.difficulty.errors else '')) }}
+                                {% for error in form.difficulty.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.cook_time.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.cook_time(class="form-control" + (' is-invalid' if form.cook_time.errors else ''), type="number", min="1") }}
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                                {% for error in form.cook_time.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.servings.label(class="form-label") }}
+                                {{ form.servings(class="form-control" + (' is-invalid' if form.servings.errors else ''), type="number", min="1") }}
+                                {% for error in form.servings.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Ingredients</h5>
+                        <div class="mb-3">
+                            {{ form.ingredients.label(class="form-label") }}
+                            {{ form.ingredients(class="form-control" + (' is-invalid' if form.ingredients.errors else ''), rows="6") }}
+                            <div class="form-text">One ingredient per line. Include quantities and any preparation notes.</div>
+                            {% for error in form.ingredients.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Instructions</h5>
+                        <div class="mb-3">
+                            {{ form.instructions.label(class="form-label") }}
+                            {{ form.instructions(class="form-control" + (' is-invalid' if form.instructions.errors else ''), rows="8") }}
+                            <div class="form-text">Enter each step on a new line. Numbering will be added automatically.</div>
+                            {% for error in form.instructions.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Additional Information</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Dietary Information</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    {{ form.is_vegetarian(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.is_vegetarian.id }}">
+                                        <i class="bi bi-egg-fried me-1"></i> Vegetarian
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.is_vegan(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.is_vegan.id }}">
+                                        <i class="bi bi-leaf me-1"></i> Vegan
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.is_gluten_free(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.is_gluten_free.id }}">
+                                        <i class="bi bi-shield-check me-1"></i> Gluten Free
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.tags.label(class="form-label") }}
+                            {{ form.tags(class="form-control" + (' is-invalid' if form.tags.errors else '')) }}
+                            <div class="form-text">Separate tags with commas</div>
+                            {% for error in form.tags.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="image" class="form-label">Recipe Image</label>
+                            {% if recipe.image_url %}
+                            <div class="mb-2">
+                                <img src="{{ url_for('static', filename=recipe.image_url) }}" class="img-thumbnail" style="max-height: 200px;" alt="Current image">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image">
+                                    <label class="form-check-label" for="remove_image">
+                                        Remove current image
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <div class="form-text">Upload a new image (leave blank to keep current image)</div>
+                            <div class="mt-2" id="imagePreview"></div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('recipes.recipe', id=recipe.id) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </a>
+                        <div class="btn-group">
+                            <button type="submit" name="save_changes" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                            <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="bi bi-trash me-1"></i> Delete Recipe
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this recipe? This action cannot be undone.</p>
+                <p class="text-danger"><strong>Warning:</strong> All data associated with this recipe will be permanently removed.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('recipes.delete_recipe', id=recipe.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// Preview uploaded image
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = `
+                <div class="card mt-2" style="max-width: 300px;">
+                    <img src="${e.target.result}" class="card-img-top" alt="Preview">
+                    <div class="card-body p-2 text-center">
+                        <small class="text-muted">New Image Preview</small>
+                    </div>
+                </div>`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Auto-resize textareas
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+
+document.querySelectorAll('textarea').forEach(textarea => {
+    // Initial resize
+    autoResize(textarea);
+    
+    // Resize on input
+    textarea.addEventListener('input', function() {
+        autoResize(this);
+    });
+});
+
+// Confirm before leaving page if there are unsaved changes
+let formChanged = false;
+const form = document.querySelector('form');
+const formInputs = form.querySelectorAll('input, textarea, select');
+
+formInputs.forEach(input => {
+    input.addEventListener('change', () => {
+        formChanged = true;
+    });
+});
+
+window.addEventListener('beforeunload', (e) => {
+    if (formChanged) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+    }
+});
+
+form.addEventListener('submit', () => {
+    formChanged = false;
+});
+</script>
+{% endblock %}

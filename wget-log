@@ -1,0 +1,11 @@
+--2025-06-14 13:31:20--  https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3
+Resolving images.unsplash.com (images.unsplash.com)... 151.101.66.208, 151.101.2.208, 151.101.194.208, ...
+Connecting to images.unsplash.com (images.unsplash.com)|151.101.66.208|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2037979 (1.9M) [image/jpeg]
+Saving to: ‘app/static/images/hero-bg.jpg’
+
+      app/st   0%       0  --.-KB/s                    app/sta   4%  95.72K   478KB/s                   app/stat   8% 159.72K   221KB/s                  app/stati  17% 351.72K   381KB/s                 app/static  19% 383.72K   236KB/s                app/static/  28% 575.72K   312KB/s               app/static/i  32% 639.72K   308KB/s               pp/static/im  36% 719.72K   309KB/s               p/static/ima  40% 799.72K   314KB/s               /static/imag  44% 879.72K   317KB/s               static/image  47% 943.72K   280KB/s    eta 4s     tatic/images  53%   1.03M   295KB/s    eta 4s     atic/images/  56%   1.09M   295KB/s    eta 4s     tic/images/h  59%   1.16M   296KB/s    eta 4s     ic/images/he  63%   1.23M   283KB/s    eta 3s     c/images/her  68%   1.33M   289KB/s    eta 3s     /images/hero  70%   1.37M   286KB/s    eta 3s     images/hero-  73%   1.44M   285KB/s    eta 3s     mages/hero-b  77%   1.50M   295KB/s    eta 3s     ages/hero-bg  80%   1.56M   283KB/s    eta 1s     ges/hero-bg.  83%   1.62M   304KB/s    eta 1s     es/hero-bg.j  86%   1.69M   273KB/s    eta 1s     s/hero-bg.jp  90%   1.75M   273KB/s    eta 1s     /hero-bg.jpg  93%   1.81M   272KB/s    eta 1s     hero-bg.jpg   97%   1.89M   266KB/s    eta 0s     app/static/i 100%   1.94M   264KB/s    in 6.9s    
+
+2025-06-14 13:31:28 (286 KB/s) - ‘app/static/images/hero-bg.jpg’ saved [2037979/2037979]
+
